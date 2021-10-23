@@ -1,0 +1,10 @@
+---
+title: HOMEWORK 3
+author: "aw3253"
+output: github_document
+---
+
+Preparing to load and tidy data:
+```{r, message=FALSE}
+library(tidyverse)
+```
