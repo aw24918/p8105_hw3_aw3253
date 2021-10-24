@@ -91,3 +91,113 @@ sweets_final
 ```
 
 On average, orders for Pink Lady Apples and Coffee Ice Cream are made between the 11th to 14th hour of the day.
+
+
+## Problem 2
+
+Loading Data:
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+data("brfss")
+
+brfss_smart2010
+```
+
+
+Tidying Data:
+```{r, message=FALSE}
+
+brfss = brfss_smart2010 %>%
+janitor::clean_names()
+
+brfss
+
+brfss_sub <- brfss %>% 
+  filter(topic == "Overall Health") %>% 
+  mutate(response = as.factor(response))
+  fct_relevel(brfss_sub $response, 
+      "Poor",
+      "Fair",
+      "Very Good",
+      "Good",
+      "Excellent")
+      
+brfss_sub 
+```
+
+
+### Questions:
+```{r}
+states_02=
+brfss_sub %>% 
+  filter(year == 2002) %>% 
+  distinct(locationabbr, locationdesc) %>% 
+   count(locationabbr) %>% 
+  filter(n >= 7)
+
+states_02
+
+
+
+states_10=
+brfss_sub %>% 
+  filter(year == 2010) %>% 
+  distinct(locationabbr, locationdesc) %>% 
+   count(locationabbr) %>% 
+  filter(n >= 7)
+
+states_10
+```
+
+In 2002, the states observed at 7+ locations were CT, FL, MA, NC, PA, and NJ
+
+In 2010, the states observed at 7+ locations were CO, PA, CA, FL, MA MD, NC, NE, NJ, NY, OH, SC, TX, WA.
+
+
+
+
+Average data values:
+```{r, message=FALSE}
+
+excellent_only =
+  brfss_sub %>% 
+  filter(response == "Excellent") %>% 
+  group_by(locationabbr, year) %>% 
+  distinct(locationdesc) %>% 
+  count(locationabbr) %>% 
+  ggplot(aes(x = year, y = n)) 
+    geom_line(aes(color = locationabbr)) 
+  
+values_only =
+  brfss_sub %>% 
+  filter(response == "Excellent") %>% 
+  group_by(year, locationabbr, locationdesc, data_value) %>% 
+  distinct(locationdesc) 
+
+new=
+pivot_wider(
+    values_only, 
+    names_from = "locationdesc", 
+    values_from = "data_value")
+new$avg_value <- rowMeans(new[ , c(3,406)], na.rm=TRUE)
+
+```
+
+
+
+NY 2006 and 2010:
+```{r}
+avg_response_ny =
+  brfss_sub %>%
+  filter(locationabbr == 'NY') %>%
+  filter(year %in% c(2006, 2010)) %>%
+  group_by(year, locationabbr, response) %>%
+  summarize(avg_response = mean(data_value)) %>%
+  ggplot(aes(x = year, y= avg_response)) +
+    geom_point() 
+
+avg_response_ny 
+
+```
+
