@@ -202,7 +202,7 @@ avg_response_ny
 ```
 
 
-## Problem 3
+## Problem 3'
 ```{r}
 run_df = 
  read_csv("data/accel_data.csv") %>%
