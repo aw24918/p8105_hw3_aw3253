@@ -198,6 +198,33 @@ avg_response_ny =
     geom_point() 
 
 avg_response_ny 
-
+ 
 ```
+
+
+## Problem 3
+```{r}
+run_df = 
+ read_csv("data/accel_data.csv") %>%
+   janitor::clean_names()
+```
+
+
+```{r}
+
+run_df$tot_activity <- rowSums(run_df[ , c(4,1443)], na.rm=TRUE)
+
+total_table = 
+  select(run_df, week, day, tot_activity)
+  
+```
+
+The weekends tend to have far less activity than the week days. During week 5 activity was the lowest compared to previous weeks.
+
+```{r}
+ggplot(total_table, aes(x = day, y = tot_activity, color = day)) + 
+  geom_point(alpha = .5) 
+```
+
+Wednesdays and Sundays have the lowest 24-hour activity time course.
 
